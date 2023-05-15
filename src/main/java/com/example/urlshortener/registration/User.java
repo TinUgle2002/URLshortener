@@ -1,7 +1,6 @@
 package com.example.urlshortener.registration;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(
@@ -25,10 +24,11 @@ public class User {
     private String username;
 
     @Column(name = "password")
-    @NotNull
     private String password;
 
     public User() {
+        this.username = "default_username";
+        this.password = generateRandomPassword(10);
     }
 
     public User(String username, String password) {
@@ -75,9 +75,7 @@ public class User {
             passwordBuilder.append(availableChars.charAt(index));
         }
 
-        String password = passwordBuilder.toString();
-
-        return password;
+        return passwordBuilder.toString();
     }
 }
 

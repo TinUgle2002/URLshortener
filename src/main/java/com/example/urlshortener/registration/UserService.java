@@ -30,7 +30,8 @@ public class UserService {
             throw new IllegalStateException("Username already exists!");
         }
 
-        System.out.println(user);
-        userRepository.save(user);
+        User tmp = new User(user.getUsername());
+        userRepository.save(tmp);
+        System.out.println("Registration successful! Password: " + tmp.getPassword());
     }
 }
