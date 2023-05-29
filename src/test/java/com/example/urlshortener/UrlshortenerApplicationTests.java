@@ -5,7 +5,6 @@ import com.example.urlshortener.registration.util.PassGenerator;
 import org.springframework.boot.test.context.SpringBootTest;
 import com.example.urlshortener.registration.DTO.UserDTO;
 import com.example.urlshortener.registration.DTO.UserResponseDTO;
-import com.example.urlshortener.registration.entity.User;
 import com.example.urlshortener.registration.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,11 +12,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MockMvcBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.Arrays;
-import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -57,7 +53,7 @@ class UrlshortenerApplicationTests {
 
         when(userService.registerUser(any(UserDTO.class))).thenReturn(responseDTO);
 
-        mockMvc.perform(post("/administration/registration/register")
+        mockMvc.perform(post("/administration/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"accountID\":\"user3\"}"))
                 .andExpect(status().isOk())
@@ -81,7 +77,7 @@ class UrlshortenerApplicationTests {
 
         when(userService.registerUser(any(UserDTO.class))).thenReturn(responseDTO);
 
-        mockMvc.perform(post("/administration/registration/register")
+        mockMvc.perform(post("/administration/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"accountID\":\"existingUser\"}"))
                 .andExpect(status().isOk())

@@ -3,14 +3,12 @@ package com.example.urlshortener.registration.controller;
 import com.example.urlshortener.registration.DTO.UserDTO;
 import com.example.urlshortener.registration.DTO.UserResponseDTO;
 import com.example.urlshortener.registration.service.UserService;
-import com.example.urlshortener.registration.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
-@RequestMapping(path = "/administration/registration")
+@RequestMapping(path = "/administration")
 public class UserController {
 
     private final UserService userService;
