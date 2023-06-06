@@ -1,7 +1,12 @@
 package com.example.urlshortener;
 
 import com.example.urlshortener.registration.controller.UserController;
+import com.example.urlshortener.registration.entity.User;
+import com.example.urlshortener.registration.repository.UserRepository;
 import com.example.urlshortener.registration.util.PassGenerator;
+import org.aspectj.lang.annotation.Before;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import com.example.urlshortener.registration.DTO.UserDTO;
 import com.example.urlshortener.registration.DTO.UserResponseDTO;
@@ -10,6 +15,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
