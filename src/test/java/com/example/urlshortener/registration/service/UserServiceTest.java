@@ -1,10 +1,9 @@
-package com.example.urlshortener.registration.tests.service;
+package com.example.urlshortener.registration.service;
 
 import com.example.urlshortener.registration.DTO.UserDTO;
 import com.example.urlshortener.registration.DTO.UserResponseDTO;
 import com.example.urlshortener.registration.entity.User;
 import com.example.urlshortener.registration.repository.UserRepository;
-import com.example.urlshortener.registration.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

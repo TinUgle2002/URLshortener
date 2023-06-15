@@ -1,4 +1,4 @@
-package com.example.urlshortener.registration.tests.controller;
+package com.example.urlshortener.registration.controller;
 
 import com.example.urlshortener.registration.DTO.UserDTO;
 import com.example.urlshortener.registration.DTO.UserResponseDTO;
