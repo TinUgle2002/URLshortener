@@ -1,5 +1,6 @@
-package com.example.urlshortener.registration;
+package com.example.urlshortener.registration.entity;
 
+import com.example.urlshortener.registration.util.PassGenerator;
 import jakarta.persistence.*;
 
 @Entity
@@ -28,17 +29,12 @@ public class User {
 
     public User() {
         this.username = "default_username";
-        this.password = generateRandomPassword(10);
+        this.password = PassGenerator.generateRandomPassword(10);
     }
 
     public User(String username, String password) {
         this.username = username;
         this.password = password;
-    }
-
-    public User(String username) {
-        this.username = username;
-        this.password = generateRandomPassword(10);
     }
 
     public String getUsername() {
@@ -65,18 +61,6 @@ public class User {
                 '}';
     }
 
-
-    public static String generateRandomPassword(int length) {
-        String availableChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()_+-=[]{}|;':\",./<>?";
-
-        StringBuilder passwordBuilder = new StringBuilder();
-        for (int i = 0; i < length; i++) {
-            int index = (int) (Math.random() * availableChars.length());
-            passwordBuilder.append(availableChars.charAt(index));
-        }
-
-        return passwordBuilder.toString();
-    }
 }
 
 

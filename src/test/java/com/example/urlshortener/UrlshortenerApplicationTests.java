@@ -1,49 +1,102 @@
 package com.example.urlshortener;
 
-import com.example.urlshortener.registration.*;
-
+import com.example.urlshortener.registration.controller.UserController;
+import com.example.urlshortener.registration.entity.User;
+import com.example.urlshortener.registration.repository.UserRepository;
+import com.example.urlshortener.registration.util.PassGenerator;
+import org.aspectj.lang.annotation.Before;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import com.example.urlshortener.registration.DTO.UserDTO;
+import com.example.urlshortener.registration.DTO.UserResponseDTO;
+import com.example.urlshortener.registration.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import java.util.Optional;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 
 
 @SpringBootTest
 class UrlshortenerApplicationTests {
 
     //1.
-    //UserServiceTest
+    //registration_test
+    private MockMvc mockMvc;
+
     @Mock
-    private UserRepository userRepository;
     private UserService userService;
+
+    private UserController userController;
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        userService = new UserService(userRepository);
+        userController = new UserController(userService);
+        mockMvc = MockMvcBuilders.standaloneSetup(userController).build();
     }
 
     @Test
-    public void registerUser_whenUsernameAlreadyExists() {
-        User existingUser = new User("user1");
-        when(userRepository.findUserByUsername("user1")).thenReturn(Optional.of(existingUser));
+    public void testRegisterUser() throws Exception {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setAccountID("user3");
 
-        User newUser = new User("user1");
-        assertThrows(IllegalStateException.class, () -> userService.registerUser(newUser));
+        UserResponseDTO responseDTO = new UserResponseDTO();
+        responseDTO.setSuccess(true);
+        responseDTO.setDescription("User registered successfully");
+        responseDTO.setPassword(PassGenerator.generateRandomPassword(10));
+
+        when(userService.registerUser(any(UserDTO.class))).thenReturn(responseDTO);
+
+        mockMvc.perform(post("/administration/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"accountID\":\"user3\"}"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.description").value("User registered successfully"))
+                .andExpect(jsonPath("$.password").value(responseDTO.getPassword()));
+
+        verify(userService, times(1)).registerUser(any(UserDTO.class));
+        verifyNoMoreInteractions(userService);
     }
 
     @Test
-    public void registerUser_whenUsernameDoesNotExist() {
-        when(userRepository.findUserByUsername("user2")).thenReturn(Optional.empty());
+    public void testRegisterUser_UserAlreadyExists() throws Exception {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setAccountID("existingUser");
 
-        User newUser = new User("user2");
-        userService.registerUser(newUser);
+        UserResponseDTO responseDTO = new UserResponseDTO();
+        responseDTO.setSuccess(false);
+        responseDTO.setDescription("Account ID already exists!");
+
+        when(userService.registerUser(any(UserDTO.class))).thenReturn(responseDTO);
+
+        mockMvc.perform(post("/administration/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"accountID\":\"existingUser\"}"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.description").value("Account ID already exists!"))
+                .andExpect(jsonPath("$.password").doesNotExist());
+
+        verify(userService, times(1)).registerUser(any(UserDTO.class));
+        verifyNoMoreInteractions(userService);
     }
+
     //1.
 }
