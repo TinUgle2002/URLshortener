@@ -2,16 +2,20 @@ package com.example.urlshortener.shorting.controller;
 
 import com.example.urlshortener.registration.entity.User;
 import com.example.urlshortener.registration.repository.UserRepository;
+import com.example.urlshortener.shorting.DTOs.Statistics;
 import com.example.urlshortener.shorting.DTOs.URLRequest;
 import com.example.urlshortener.shorting.DTOs.URLResponse;
 import com.example.urlshortener.shorting.entity.URL;
 import com.example.urlshortener.shorting.repository.URLRepository;
 import com.example.urlshortener.shorting.service.URLService;
+import com.example.urlshortener.shorting.util.Authentication;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,8 +35,13 @@ public class URLController {
     }
 
     @GetMapping
-    public List<URL> getStudents() {
+    public List<URL> getURLs() {
         return urlService.getURLs();
+    }
+
+    @GetMapping("/administration/statistics")
+    public List<Statistics> getStatistics() {
+        return urlService.getStatistics();
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
@@ -41,20 +50,23 @@ public class URLController {
     }
 
     @PostMapping("/administration/short")
-    public URLResponse shortenURL(@RequestBody URLRequest longUrl,
-                                  @RequestHeader("username") String username,
-                                  @RequestHeader("password") String password) {
+    public URLResponse shortenURL(@RequestBody URLRequest longUrl, HttpServletRequest request) {
 
-        Optional<User> user = userRepository.findUserByUsername(username);
-        URLResponse badResponse1 = new URLResponse();
-        badResponse1.setDescription("User not found!");
-        URLResponse badResponse2 = new URLResponse();
-        badResponse2.setDescription("Incorrect password!");
+        String authorizationHeader = request.getHeader("Authorization");
 
-        if(!user.isPresent()){
-            return badResponse1;
-        } else if(!password.equals(user.get().getPassword())){
-            return badResponse2;
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Basic ")) {
+            return Authentication.createNullHeaderResponse();
+        }
+
+        String base64Credentials = authorizationHeader.substring("Basic ".length()).trim();
+        String credentials = new String(Base64.getDecoder().decode(base64Credentials), StandardCharsets.UTF_8);
+        String[] usernamePassword = credentials.split(":", 2);
+        String username = usernamePassword[0];
+        String password = usernamePassword[1];
+
+        Optional<User> user = userRepository.findByUsernameAndPassword(username, password);
+        if (!user.isPresent()) {
+            return Authentication.createUnauthorizedResponse();
         }
 
         return urlService.shortenURL(longUrl);

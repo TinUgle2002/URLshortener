@@ -11,15 +11,14 @@ public class URL {
     private Long id;
     @Column(name = "longURL")
     private String url;
-    private String short_url;
+    private String shortUrl;
     @Column(name = "redirects")
     private int redirects;
     private int redirectType;
 
 
-    public URL(String long_url, String short_url,int redirectType) {
+    public URL(String long_url, int redirectType) {
         this.url = long_url;
-        this.short_url = short_url;
         this.redirectType = redirectType;
     }
 
@@ -42,12 +41,12 @@ public class URL {
         this.url = long_url;
     }
 
-    public String getShort_url() {
-        return short_url;
+    public String getShortUrl() {
+        return shortUrl;
     }
 
-    public void setShort_url(String short_url) {
-        this.short_url = short_url;
+    public void setShortUrl(String short_url) {
+        this.shortUrl = short_url;
     }
 
     public int getRedirects() {
